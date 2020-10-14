@@ -117,6 +117,7 @@ public class Fragment2 extends Fragment {
         if(file == null) {
             file = createFile();
         }
+        //아래 org.techtown.diary.fileprovider 는 manifest.xml 시스템에 등록한 이름과 같아야 합니다.
         Uri fileUri = FileProvider.getUriForFile(context, "org.techtown.diary.fileprovider", file);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
