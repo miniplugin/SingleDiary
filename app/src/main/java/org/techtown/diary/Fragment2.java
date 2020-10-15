@@ -22,8 +22,8 @@ import java.io.File;
 
 public class Fragment2 extends Fragment {
 
-    Context context;
-    OnTabItemSelectedListener listener;
+    Context context;//현재 화면 가리키는 변수
+    OnTabItemSelectedListener listener;//하단 탭메뉴를 클릭
     OnRequestListener requestListener;
     ImageView pictureImageView;
     boolean isPhotoCaptured;
@@ -132,6 +132,20 @@ public class Fragment2 extends Fragment {
         File storageDir = Environment.getExternalStorageDirectory();
         File outFile = new File(storageDir, filename);
         return outFile;
+    }
+
+    /**
+     * 사진찍기 앱 같은 다른 액티비티로 부터 응답받은 내용 처리
+     */
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if(intent != null) {
+            switch (requestCode)  {
+                case  AppConstants.REQ_PHOTO_CAPTURE://사진 찍는 경우
+
+
+            }
+        }
     }
 
 }
