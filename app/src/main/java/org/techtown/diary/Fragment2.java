@@ -148,7 +148,7 @@ public class Fragment2 extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         if(intent != null) {
-            Toast.makeText(getContext(),"응답메세지"+ requestCode, Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(),"응답메세지"+ requestCode, Toast.LENGTH_SHORT).show();
             switch (requestCode)  {
                 case  AppConstants.REQ_PHOTO_CAPTURE://사진 찍는 경우
                     resultPhotoBitmap = decodeSampledBitmapFromResource(file, pictureImageView.getWidth(), pictureImageView.getHeight());
