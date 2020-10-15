@@ -73,7 +73,7 @@ public class Fragment1 extends Fragment {
             @Override
             public void onItemClick(NoteAdapter.ViewHolder holder, View view, int position) {
                 Note item = noteAdapter.getItem(position);
-                Toast.makeText(getContext(), "아이템 선택됨 : " + item.getContents(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "아이템 선택됨 : " + item.getContents(), Toast.LENGTH_SHORT).show();
             }
         });
 

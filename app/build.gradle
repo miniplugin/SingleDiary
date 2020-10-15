@@ -35,6 +35,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'lib.kingja.switchbutton:switchbutton:1.1.8'
     implementation 'com.github.channguyen:rsv:1.0.1'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0-alpha'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

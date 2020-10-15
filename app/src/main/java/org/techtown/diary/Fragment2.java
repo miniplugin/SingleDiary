@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -22,14 +24,15 @@ import java.io.File;
 
 public class Fragment2 extends Fragment {
 
-    Context context;//현재 화면 가리키는 변수
-    OnTabItemSelectedListener listener;//하단 탭메뉴를 클릭
-    OnRequestListener requestListener;
-    ImageView pictureImageView;
-    boolean isPhotoCaptured;
-    boolean isPhtoFileSaved;
-    int selectedPhotoMenu;
-    File file;
+    Context context;//현재 화면 가리키는 화면변수
+    OnTabItemSelectedListener listener;//하단 탭메뉴를 클릭 대기변수
+    OnRequestListener requestListener;//카메라앱 클릭 대기변수
+    ImageView pictureImageView;//카메라 이미지변수
+    boolean isPhotoCaptured;//카메라로 찍은 이미지 확인변수
+    boolean isPhtoFileSaved;//카메라로 찍은 이미지 저장된 파일변수
+    int selectedPhotoMenu;//카메라 대화상자에서 카메라앱실행,앨범 선택변수
+    File file;//저장소 저장된 파일변수
+    Bitmap resultPhotoBitmap;//사진찍은 이미지를 화면에 불러올때 이미지변수
 
     @Override
     public void onAttach(Context context) {//프레그먼트가 실행될때 자동실행
@@ -66,14 +69,19 @@ public class Fragment2 extends Fragment {
             public void onClick(View v) {
 
                 if(isPhotoCaptured || isPhtoFileSaved) {
-                    Toast.makeText(getContext(),"사진수정", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(),"사진수정", Toast.LENGTH_SHORT).show();
                     showDialog(AppConstants.CONTENT_PHOTO_EX);
                 } else {
-                    Toast.makeText(getContext(),"신규등록", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(),"신규등록", Toast.LENGTH_SHORT).show();
                     showDialog(AppConstants.CONTENT_PHOTO);
                 }
             }
         });
+
+        //현재 위치 확인
+        if(requestListener != null) {
+            requestListener.onRequest("getCurrentLocation");
+        }
 
         return rootView;
     }
@@ -82,7 +90,7 @@ public class Fragment2 extends Fragment {
         AlertDialog.Builder builder = null;
         switch (contentPhoto) {//신규사진찍기 CONTENT_PHOTO, 앨범에서 선택 CONTENT_PHOTO_EX
             case AppConstants.CONTENT_PHOTO:
-                Toast.makeText(getContext(),"사진등록메뉴", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(),"사진등록메뉴", Toast.LENGTH_SHORT).show();
                 builder = new AlertDialog.Builder(context);
                 builder.setTitle("사진 메뉴 선택");
                 builder.setSingleChoiceItems(R.array.array_photo, 0, new DialogInterface.OnClickListener() {
@@ -140,12 +148,52 @@ public class Fragment2 extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         if(intent != null) {
+            Toast.makeText(getContext(),"응답메세지"+ requestCode, Toast.LENGTH_LONG).show();
             switch (requestCode)  {
                 case  AppConstants.REQ_PHOTO_CAPTURE://사진 찍는 경우
-
-
+                    resultPhotoBitmap = decodeSampledBitmapFromResource(file, pictureImageView.getWidth(), pictureImageView.getHeight());
+                    pictureImageView.setImageBitmap(resultPhotoBitmap);
+                    break;
             }
         }
+    }
+
+    public Bitmap decodeSampledBitmapFromResource(File file, int width, int height) {
+
+        // 먼저 inJustDecodeBounds = true로 디코딩하여 치수 확인
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(file.getAbsolutePath(),options);
+
+        // inSampleSize 계산
+        options.inSampleSize = calculateInSampleSize(options, width, height);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+
+        return BitmapFactory.decodeFile(file.getAbsolutePath(),options);
+    }
+
+    private int calculateInSampleSize(BitmapFactory.Options options, int width, int height) {
+        // 이미지의 Raw데이터(원시데이터) 높이 및 너비
+        final int height2 = options.outHeight;
+        final int width2 = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height2 > height || width2 > width) {
+
+            final int halfHeight = height;
+            final int halfWidth = width;
+
+            // 가장 큰 inSampleSize 값을 계산하고 둘 다 유지합니다
+            // 요청 된 높이와 너비보다 큰 높이와 너비.
+            while ((halfHeight / inSampleSize) >= height
+                    && (halfWidth / inSampleSize) >= width) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
     }
 
 }

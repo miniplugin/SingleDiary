@@ -1,6 +1,14 @@
+### 20201015(목)
+- 챠트모듈추가: com.github.PhilJay:MPAndroidChart:v3.1.0-alpha
+- 프레그먼트3: 통계페이지
+- 사진 찍기 앱 처리OK. 앨범에서 사진선택 미처리.
 ### 20201014(수)
+- 자동인증모듈추가: com.github.pedroSG94:AutoPermissions:1.0.3 (카메라모듈을 작업앱에서 사용시 자동인증되어서 사용가능)
+- 슬라이드모듈추가: com.github.channguyen:rsv:1.0.1 (글쓰기 폼에서 레인지 슬라이드객체)
 - 글작성 액티비티(화면): Fragment2.java - fragment2.xml
 ### 20201012(월)
+- 스위치버튼모듈추가: lib.kingja.switchbutton:switchbutton:1.1.8 (목록페이지에서사용)
+- 머티어리얼모듈추가: 디자인보가에서 AppBarLayout 모듈다운로드로 추가. 이것만 자동추가, 이후 수동추가.
 - 데이터(SQLite|더미) - 어댑터(어댑터관리자:DAO역할) - 리스트(RecylerViewer)
 - 반자동으로 만들어진 리사이클러뷰어 프래그먼트를
 - 단위: dp(덴서티픽셀,density pixel,밀도픽셀)-화면의 크기에 따라서 자동으로 확대/축소가 되는 단위(반응형)
