@@ -30,7 +30,7 @@ public class Fragment2 extends Fragment {
     OnRequestListener requestListener;//카메라앱 클릭 대기변수
     ImageView pictureImageView;//카메라 이미지변수
     boolean isPhotoCaptured;//카메라로 찍은 이미지 확인변수
-    boolean isPhtoFileSaved;//카메라로 찍은 이미지 저장된 파일변수
+    boolean isPhotoFileSaved;//카메라로 찍은 이미지 저장된 파일변수
     int selectedPhotoMenu;//카메라 대화상자에서 카메라앱실행,앨범 선택변수
     File file;//저장소 저장된 파일변수
     Bitmap resultPhotoBitmap;//사진찍은 이미지를 화면에 불러올때 이미지변수
@@ -69,7 +69,7 @@ public class Fragment2 extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if(isPhotoCaptured || isPhtoFileSaved) {
+                if(isPhotoCaptured || isPhotoFileSaved) {
                     Toast.makeText(getContext(),"사진수정", Toast.LENGTH_SHORT).show();
                     showDialog(AppConstants.CONTENT_PHOTO_EX);
                 } else {
@@ -161,6 +161,7 @@ public class Fragment2 extends Fragment {
                 case  AppConstants.REQ_PHOTO_CAPTURE://사진 찍는 경우
                     resultPhotoBitmap = decodeSampledBitmapFromResource(file, pictureImageView.getWidth(), pictureImageView.getHeight());
                     pictureImageView.setImageBitmap(resultPhotoBitmap);
+                    isPhotoFileSaved = true;//이 변수값으로 사진수정(CONTENT_PHOTO_EX)로 변경됨
                     break;
                 case AppConstants.REQ_PHOTO_SELECTION://앨번에서 사진을 선택하는 경우
                     Uri selectedImage = intent.getData();
@@ -172,7 +173,7 @@ public class Fragment2 extends Fragment {
                     cursor.close();
                     resultPhotoBitmap = decodeSampledBitmapFromResource(new File(filePath), pictureImageView.getWidth(), pictureImageView.getHeight());
                     pictureImageView.setImageBitmap(resultPhotoBitmap);
-                    isPhotoCaptured = true;
+                    isPhotoCaptured = true;//이 변수값으로 사진수정(CONTENT_PHOTO_EX)로 변경됨
                     break;
             }
         }
