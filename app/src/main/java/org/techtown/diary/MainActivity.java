@@ -50,7 +50,13 @@ public class MainActivity extends AppCompatActivity implements OnTabItemSelected
     }
 
     @Override
-    public void onTabSelected(int position) {
-
+    public void onTabSelected(int position) { //네비게이션 메뉴가 아닌 곳에서 [오늘작성]버튼으로 탭메뉴호출시 구현
+        if(position == 0) {
+            bottomNavigationView.setSelectedItemId(R.id.tab1);
+        }else if(position == 1) {
+            bottomNavigationView.setSelectedItemId(R.id.tab2);
+        }else if(position == 2) {
+            bottomNavigationView.setSelectedItemId(R.id.tab3);
+        }
     }
 }

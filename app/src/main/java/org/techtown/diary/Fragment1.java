@@ -3,6 +3,7 @@ package org.techtown.diary;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,14 +24,32 @@ public class Fragment1 extends Fragment {
     RecyclerView recyclerView;
     NoteAdapter noteAdapter;
     Context context;
-    OnTabItemSelectedListener listener;
+    OnTabItemSelectedListener listener;//하단 탭메뉴 인터페이스 리스너 변수
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.context = context;
+        if(context instanceof OnTabItemSelectedListener) {
+            listener = (OnTabItemSelectedListener) context;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        if(context != null){
+            context = null;
+            listener = null;
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment1, container, false);
 
-        initUI(view);
+        initUI(view);//인플레이트된 화면의 비지니스 로직 구현.
 
         return view;
     }
@@ -43,6 +62,7 @@ public class Fragment1 extends Fragment {
             public void onClick(View v) {
                 if(listener != null) {
                     listener.onTabSelected(1);
+                    //Toast.makeText(getContext(), "리스너 후 디버그용", Toast.LENGTH_SHORT).show();
                 }
             }
         });
