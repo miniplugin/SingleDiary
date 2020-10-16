@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -104,6 +105,8 @@ public class Fragment2 extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         if(selectedPhotoMenu == 0) {
                             showPhotoCaptureActivity();
+                        } else if(selectedPhotoMenu == 1) {
+                            showPhotoSelectionActivity();
                         }
                     }
                 });
@@ -119,6 +122,11 @@ public class Fragment2 extends Fragment {
         }
         AlertDialog dialog = builder.create();//팝업 객체생성
         dialog.show();//팝업 렌더링
+    }
+
+    public void showPhotoSelectionActivity() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, AppConstants.REQ_PHOTO_SELECTION);
     }
 
     public void showPhotoCaptureActivity() { //사진찍기 선택
@@ -153,6 +161,18 @@ public class Fragment2 extends Fragment {
                 case  AppConstants.REQ_PHOTO_CAPTURE://사진 찍는 경우
                     resultPhotoBitmap = decodeSampledBitmapFromResource(file, pictureImageView.getWidth(), pictureImageView.getHeight());
                     pictureImageView.setImageBitmap(resultPhotoBitmap);
+                    break;
+                case AppConstants.REQ_PHOTO_SELECTION://앨번에서 사진을 선택하는 경우
+                    Uri selectedImage = intent.getData();
+                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                    Cursor cursor = context.getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                    cursor.moveToFirst();
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                    String filePath = cursor.getString(columnIndex);
+                    cursor.close();
+                    resultPhotoBitmap = decodeSampledBitmapFromResource(new File(filePath), pictureImageView.getWidth(), pictureImageView.getHeight());
+                    pictureImageView.setImageBitmap(resultPhotoBitmap);
+                    isPhotoCaptured = true;
                     break;
             }
         }
