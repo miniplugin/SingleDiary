@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.core.content.FileProvider;
@@ -15,11 +16,16 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.io.File;
 
@@ -33,6 +39,7 @@ public class Fragment2 extends Fragment {
     boolean isPhotoFileSaved;//카메라로 찍은 이미지 저장된 파일변수
     int selectedPhotoMenu;//카메라 대화상자에서 카메라앱실행,앨범 선택변수
     File file;//저장소 저장된 파일변수
+    Uri fileUri;//저장소의 파일 경로
     Bitmap resultPhotoBitmap;//사진찍은 이미지를 화면에 불러올때 이미지변수
 
     @Override
@@ -134,13 +141,23 @@ public class Fragment2 extends Fragment {
             file = createFile();
         }
         //아래 org.techtown.diary.fileprovider 는 manifest.xml 시스템에 등록한 이름과 같아야 합니다.
-        Uri fileUri = FileProvider.getUriForFile(context, "org.techtown.diary.fileprovider", file);
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        //Uri fileUri = FileProvider.getUriForFile(context, "org.techtown.diary.fileprovider", file);
+        if(Build.VERSION.SDK_INT >= 24) {
+            Log.d("search","안드로이드7.0 누가버전부터 FileProvider 사용가능");
+            fileUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID, file);
+        } else {
+            //build.gradle의 targetSdkVersion을 24미만으로 설정해야 아래경로로 파일이 저장됨
+            //안드로이드 정책임. 참조: https://darksilber.tistory.com/325
+            fileUri = Uri.fromFile(file);
+        }
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//카메라앱 실행
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-        if(intent.resolveActivity(context.getPackageManager()) != null){
+        //if(intent.resolveActivity(context.getPackageManager()) != null){
             startActivityForResult(intent, AppConstants.REQ_PHOTO_CAPTURE);
             //위 사진을 찍은 값을 처리 하려면, onActivityResult 매서드 생성해야 함.
-        }
+        //}
     }
 
     public File createFile() { //사진 찍기시 신규파일 생성
@@ -159,8 +176,12 @@ public class Fragment2 extends Fragment {
             Toast.makeText(getContext(),"응답메세지"+ requestCode, Toast.LENGTH_SHORT).show();
             switch (requestCode)  {
                 case  AppConstants.REQ_PHOTO_CAPTURE://사진 찍는 경우
-                    resultPhotoBitmap = decodeSampledBitmapFromResource(file, pictureImageView.getWidth(), pictureImageView.getHeight());
-                    pictureImageView.setImageBitmap(resultPhotoBitmap);
+                    /*resultPhotoBitmap = decodeSampledBitmapFromResource(file, pictureImageView.getWidth(), pictureImageView.getHeight());
+                    pictureImageView.setImageBitmap(resultPhotoBitmap);*/
+                    Glide.with(context)
+                            .load(file)
+                            .apply(new RequestOptions().override(pictureImageView.getWidth(), pictureImageView.getHeight()))
+                            .into(pictureImageView);
                     isPhotoFileSaved = true;//이 변수값으로 사진수정(CONTENT_PHOTO_EX)로 변경됨
                     break;
                 case AppConstants.REQ_PHOTO_SELECTION://앨번에서 사진을 선택하는 경우
@@ -171,14 +192,18 @@ public class Fragment2 extends Fragment {
                     int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                     String filePath = cursor.getString(columnIndex);
                     cursor.close();
-                    resultPhotoBitmap = decodeSampledBitmapFromResource(new File(filePath), pictureImageView.getWidth(), pictureImageView.getHeight());
-                    pictureImageView.setImageBitmap(resultPhotoBitmap);
+                    //resultPhotoBitmap = decodeSampledBitmapFromResource(new File(filePath), pictureImageView.getWidth(), pictureImageView.getHeight());
+                    //pictureImageView.setImageBitmap(resultPhotoBitmap);//화면이 자동으로 돌아가서 아래처럼 변경
+                    Glide.with(context)
+                            .load(new File(filePath))
+                            .apply(new RequestOptions().override(pictureImageView.getWidth(), pictureImageView.getHeight()))
+                            .into(pictureImageView);
                     isPhotoCaptured = true;//이 변수값으로 사진수정(CONTENT_PHOTO_EX)로 변경됨
                     break;
             }
         }
     }
-
+    //아래는 이미지 사이즈 줄이기 메서드 사용안함, 대신 Glide.apply 로 이미지 리사이즈처리
     public Bitmap decodeSampledBitmapFromResource(File file, int width, int height) {
 
         // 먼저 inJustDecodeBounds = true로 디코딩하여 치수 확인
