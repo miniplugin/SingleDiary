@@ -33,11 +33,10 @@ public class Fragment2 extends Fragment {
 
     Context context;//현재 화면 가리키는 화면변수
     OnTabItemSelectedListener listener;//하단 탭메뉴를 클릭 대기변수
-    OnRequestListener requestListener;//카메라앱 클릭 대기변수
     ImageView pictureImageView;//카메라 이미지변수
     boolean isPhotoCaptured;//카메라로 찍은 이미지 확인변수
     boolean isPhotoFileSaved;//카메라로 찍은 이미지 저장된 파일변수
-    int selectedPhotoMenu;//카메라 대화상자에서 카메라앱실행,앨범 선택변수
+    int selectedPhotoMenu = 0;//카메라 대화상자에서 카메라앱실행,앨범 선택변수
     File file;//저장소 저장된 파일변수
     Uri fileUri;//저장소의 파일 경로
     Bitmap resultPhotoBitmap;//사진찍은 이미지를 화면에 불러올때 이미지변수
@@ -49,9 +48,6 @@ public class Fragment2 extends Fragment {
         if (context instanceof OnTabItemSelectedListener) {
             listener = (OnTabItemSelectedListener) context;
         }
-        if (context instanceof OnRequestListener) {
-            requestListener = (OnRequestListener) context;
-        }
     }
 
     @Override
@@ -60,7 +56,6 @@ public class Fragment2 extends Fragment {
         if (context != null) {
             context = null;
             listener = null;
-            requestListener = null;
         }
     }
 
@@ -85,11 +80,6 @@ public class Fragment2 extends Fragment {
                 }
             }
         });
-
-        //현재 위치 확인
-        if(requestListener != null) {
-            requestListener.onRequest("getCurrentLocation");
-        }
 
         return rootView;
     }
@@ -124,6 +114,34 @@ public class Fragment2 extends Fragment {
                     }
                 });
                 break;
+            case AppConstants.CONTENT_PHOTO_EX:
+                builder = new AlertDialog.Builder(context);
+                builder.setTitle("사진 메뉴 선택");
+                builder.setSingleChoiceItems(R.array.array_photo_ex, 0, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        selectedPhotoMenu = which;
+                    }
+                });
+                builder.setPositiveButton("선택", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if(selectedPhotoMenu == 0) {//사진 찍기
+                            showPhotoCaptureActivity();
+                        } else if(selectedPhotoMenu == 1) {//앨범에서 선택하기
+                            showPhotoSelectionActivity();
+                        } else if(selectedPhotoMenu == 2) {//사진 삭제하기
+                            isPhotoCaptured = false;//이 변수값으로 사진등록(CONTENT_PHOTO)로 변경됨
+                            pictureImageView.setImageResource(R.drawable.imagetoset);
+                        }
+                    }
+                });
+                builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                    }
+                });
+                break;
             default:
                 break;
         }
@@ -146,18 +164,15 @@ public class Fragment2 extends Fragment {
             Log.d("search","안드로이드7.0 누가버전부터 FileProvider 사용가능");
             fileUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID, file);
         } else {
-            //build.gradle의 targetSdkVersion을 24미만으로 설정해야 아래경로로 파일이 저장됨
+            //build.gradle의 targetSdkVersion을 24미만으로 설정해야 아래경로로 파일이 저장않됨
             //안드로이드 정책임. 참조: https://darksilber.tistory.com/325
             fileUri = Uri.fromFile(file);
         }
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//카메라앱 실행
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);//위 카메라앱에서 저장된 값을 가져오는 권한
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-        //if(intent.resolveActivity(context.getPackageManager()) != null){
-            startActivityForResult(intent, AppConstants.REQ_PHOTO_CAPTURE);
-            //위 사진을 찍은 값을 처리 하려면, onActivityResult 매서드 생성해야 함.
-        //}
+        startActivityForResult(intent, AppConstants.REQ_PHOTO_CAPTURE);
+        //위 사진을 찍은 값을 처리 하려면, onActivityResult 매서드 생성해야 함.
     }
 
     public File createFile() { //사진 찍기시 신규파일 생성
@@ -184,7 +199,7 @@ public class Fragment2 extends Fragment {
                             .into(pictureImageView);
                     isPhotoFileSaved = true;//이 변수값으로 사진수정(CONTENT_PHOTO_EX)로 변경됨
                     break;
-                case AppConstants.REQ_PHOTO_SELECTION://앨번에서 사진을 선택하는 경우
+                case AppConstants.REQ_PHOTO_SELECTION://앨범에서 사진을 선택하는 경우
                     Uri selectedImage = intent.getData();
                     String[] filePathColumn = {MediaStore.Images.Media.DATA};
                     Cursor cursor = context.getContentResolver().query(selectedImage, filePathColumn, null, null, null);
