@@ -1,6 +1,8 @@
 #### 싱글다이어리 참조 소스 및 기타정보
 - https://github.com/mike-jung/DoItAndroidRev8/tree/master/part3/SingleDiary4
 - 테스트기기를 API24이상(안드로이드7.0 누가버전2016년)으로 변경 후 테스트예정.
+- 깃 master 브랜치링크: [UI강의 소스로 사용](https://github.com/miniplugin/SingleDiary/tree/master)
+- 깃 dev 브랜치링크: [개발강의 소스로 사용](https://github.com/miniplugin/SingleDiary/tree/dev)
 
 #### 20211025(월)
 - 지금까지 작업한 내역은 UI강의 소스로 사용.(깃의 master 브랜치)
