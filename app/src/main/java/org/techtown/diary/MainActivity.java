@@ -4,18 +4,27 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.yanzhenjie.permission.Action;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.runtime.Permission;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnTabItemSelectedListener {
+    //디버그용 태그 추가
+    private static final String TAG = "MainActivity1";
     //멤버 변수선언
     BottomNavigationView bottomNavigationView;
     Fragment1 fragment1;
     Fragment2 fragment2;
     Fragment3 fragment3;
-
+    //데이터베이스 객체 생성 이후 쿼리가 가능합니다.(아래)
+    public static NoteDatabase mDatabase = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +56,32 @@ public class MainActivity extends AppCompatActivity implements OnTabItemSelected
                 return false;
             }
         });
+        // 데이터베이스 열기
+        openDatabase();
+    }
+
+    //데이터베이스 열기 (데이터베이스가 없을 때는 만들기)
+    public void openDatabase() {
+        if (mDatabase != null) {
+            mDatabase.close();
+            mDatabase = null;
+        }
+        mDatabase = NoteDatabase.getInstance(this);
+        boolean isOpen = mDatabase.open();
+        if (isOpen) {
+            Log.d(TAG, "Note database is open.");
+        } else {
+            Log.d(TAG, "Note database is not open.");
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mDatabase != null) {
+            mDatabase.close();
+            mDatabase = null;
+        }
     }
 
     @Override

@@ -10,7 +10,7 @@ import android.util.Log;
  * 메모 데이터베이스
  */
 public class NoteDatabase {
-    private static final String TAG = "NoteDatabase";//Log.d(검색태그명으로 사용)
+    private static final String TAG = "NoteDatabase1";//Log.d(검색태그명으로 사용)
     private static NoteDatabase database;//싱글톤 객체(인스턴스): 즉, 객체를 1번만 생성하겠다고 명시
     public static String TABLE_NOTE = "NOTE";//테이블 이름
     public static int DATABASE_VERSION = 1;//버전
@@ -51,7 +51,7 @@ public class NoteDatabase {
      * @return
      */
     public Cursor rawQuery(String SQL) {
-        Log.d(TAG,"executeQuery called.");
+        Log.d(TAG,"executeQuery called. "+SQL);
         Cursor c1 = null;
         try {
             c1 = db.rawQuery(SQL, null);
@@ -63,7 +63,7 @@ public class NoteDatabase {
     }
 
     public boolean execSQL(String SQL) {
-        Log.d(TAG,"\nexecute called.\n");
+        Log.d(TAG,"execute called.");
         try {
             Log.d(TAG, "SQL : " + SQL);
             db.execSQL(SQL);
@@ -108,7 +108,7 @@ public class NoteDatabase {
                 Log.e(TAG, "Exception in CREATE_SQL", ex);
             }
 
-            //인덱스 생성
+            //인덱스 생성: 날짜 별로 검색시 속도 향상시킴
             String CREATE_INDEX_SQL = "create index " + TABLE_NOTE + "_IDX ON " + TABLE_NOTE + "("
                     + "CREATE_DATE"
                     + ")";

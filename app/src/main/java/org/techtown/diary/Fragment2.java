@@ -30,7 +30,8 @@ import com.bumptech.glide.request.RequestOptions;
 import java.io.File;
 
 public class Fragment2 extends Fragment {
-
+    //디버그용 태그 추가
+    private static final String TAG = "Fragment2";
     Context context;//현재 화면 가리키는 화면변수
     OnTabItemSelectedListener listener;//하단 탭메뉴를 클릭 대기변수
     ImageView pictureImageView;//카메라 이미지변수
@@ -187,8 +188,8 @@ public class Fragment2 extends Fragment {
      */
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
+        Log.d(TAG,"응답메세지"+ requestCode);
         if(intent != null) {
-            Toast.makeText(getContext(),"응답메세지"+ requestCode, Toast.LENGTH_SHORT).show();
             switch (requestCode)  {
                 case  AppConstants.REQ_PHOTO_CAPTURE://사진 찍는 경우
                     /*resultPhotoBitmap = decodeSampledBitmapFromResource(file, pictureImageView.getWidth(), pictureImageView.getHeight());

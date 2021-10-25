@@ -1,6 +1,7 @@
 package org.techtown.diary;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,22 +10,31 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+
 import lib.kingja.switchbutton.SwitchMultiButton;
 
 /**
  * A fragment representing a list of Items.
  */
 public class Fragment1 extends Fragment {
+    //디버그용 태그 추가
+    private static final String TAG = "Fragment1";
     //클래스에서 사용할 멤버변수 선언(아래)
     RecyclerView recyclerView;
     NoteAdapter noteAdapter;
     Context context;
     OnTabItemSelectedListener listener;//하단 탭메뉴 인터페이스 리스너 변수
+    SimpleDateFormat todayDateFormat;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -48,10 +58,57 @@ public class Fragment1 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment1, container, false);
-
         initUI(view);//인플레이트된 화면의 비지니스 로직 구현.
-
+        loadNoteListData();//NOTE 테이블의 저장된 데이터 불러와서 화면에 뿌리기
         return view;
+    }
+    //리스트 데이터 로딩
+    private int loadNoteListData() {
+        int recordCount = -1;
+        String sql = "select _id, WEATHER, ADDRESS, LOCATION_X, LOCATION_Y, CONTENTS, MOOD, PICTURE, CREATE_DATE, MODIFY_DATE from " + NoteDatabase.TABLE_NOTE + " order by CREATE_DATE desc";
+        NoteDatabase database = NoteDatabase.getInstance(context);
+        if (database != null) {
+            Cursor outCursor = database.rawQuery(sql);
+            recordCount = outCursor.getCount();
+            Log.d(TAG,"record count : " + recordCount + "\n");
+            ArrayList<Note> items = new ArrayList<Note>();
+            for (int i = 0; i < recordCount; i++) {
+                outCursor.moveToNext();
+                int _id = outCursor.getInt(0);
+                String weather = outCursor.getString(1);
+                String address = outCursor.getString(2);
+                String locationX = outCursor.getString(3);
+                String locationY = outCursor.getString(4);
+                String contents = outCursor.getString(5);
+                String mood = outCursor.getString(6);
+                String picture = outCursor.getString(7);
+                String dateStr = outCursor.getString(8);
+                String createDateStr = null;
+                if (dateStr != null && dateStr.length() > 10) {
+                    try {
+                        Date inDate = AppConstants.dateFormat4.parse(dateStr);
+                        if (todayDateFormat == null) {
+                            todayDateFormat = new SimpleDateFormat(getResources().getString(R.string.today_date_format));
+                        }
+                        createDateStr = todayDateFormat.format(inDate);
+                        Log.d(TAG,"currentDateString : " + createDateStr);
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    createDateStr = "";
+                }
+
+                Log.d(TAG,"#" + i + " -> " + _id + ", " + weather + ", " +
+                        address + ", " + locationX + ", " + locationY + ", " + contents + ", " +
+                        mood + ", " + picture + ", " + createDateStr);
+                items.add(new Note(_id, weather, address, locationX, locationY, contents, mood, picture, createDateStr));
+            }
+            outCursor.close();
+            noteAdapter.setItems(items);
+            noteAdapter.notifyDataSetChanged();
+        }
+        return recordCount;
     }
 
     private void initUI(View view) {

@@ -4,11 +4,18 @@
 - 깃 master 브랜치링크: [UI강의 소스로 사용](https://github.com/miniplugin/SingleDiary/tree/master)
 - 깃 dev 브랜치링크: [개발강의 소스로 사용](https://github.com/miniplugin/SingleDiary/tree/dev)
 
+#### 20211026(화) 작업예정.
+- 리스트화면에 보여주기위해서 입력화면에 저장하는 코딩 시작
+
 #### 20211025(월)
 - 지금까지 작업한 내역은 UI강의 소스로 사용.(깃의 master 브랜치)
 - 깃에서 새 dev 브랜치 생성: 개발강의 소스로 사용.
 - 앱을 SQLite 데이터베이스와 연동하기.
 - NoteDatabase SQLite 테이블 만들기.
+- MainActivity 에 openDatabase(); 로 DatabaseHelper 클래스객체 생성하면서 DB파일도생성
+- Fragment1 의 리사이클러뷰에 데이터어댑터 바인딩함.
+- 작업중 unknown pattern character 'Y' android 에러 Logcat 으로 확인됨.
+- 원인은 SimpleDateFormat 의 패턴에 대문자 Y를 사용해서 임. 소문자 y로 변경 후 OK.
 
 #### 20211024(일) : 거의 1년만에 이어서 작업합니다.^^
 - 사진찍기 대화상자에서 앨범에서 사진선택 앨범에서 가져오기 처리(아래)
