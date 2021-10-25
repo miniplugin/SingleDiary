@@ -16,7 +16,7 @@ public class AppConstants {
     public static String FOLDER_PHOTO;
 
     public static final String KEY_URI_PHOTO = "URI_PHOTO";
-
+    public static String DATABASE_NAME = "note.db";
 
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("YYYYMMddHHmm");
     public static SimpleDateFormat dateFormat2 = new SimpleDateFormat("YYYY-MM-dd HH시");
