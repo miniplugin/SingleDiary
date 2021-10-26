@@ -4,10 +4,14 @@
 - 깃 master 브랜치링크: [UI강의 소스로 사용](https://github.com/miniplugin/SingleDiary/tree/master)
 - 깃 dev 브랜치링크: [개발강의 소스로 사용](https://github.com/miniplugin/SingleDiary/tree/dev)
 
-#### 20211026(화) 작업예정.
-- 리스트화면에 보여주기위해서 입력화면에 저장하는 코딩 시작
+#### 20211027(수): 작업예정
+- 통계화면과 DB연동시키기.
+- Fragment1 에서 목록 클릭시 Fragment2 글수정화면으로 이동처리(수정/삭제기능).
 
-#### 20211025(월)
+#### 20211026(화): Fragment2.java
+- 리스트화면에 보여주기위해서 입력화면에 저장하는 코딩.
+
+#### 20211025(월): Fragment1.java
 - 지금까지 작업한 내역은 UI강의 소스로 사용.(깃의 master 브랜치)
 - 깃에서 새 dev 브랜치 생성: 개발강의 소스로 사용.
 - 앱을 SQLite 데이터베이스와 연동하기.

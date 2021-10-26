@@ -20,14 +20,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.github.channguyen.rsv.RangeSliderView;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Date;
 
 public class Fragment2 extends Fragment {
     //디버그용 태그 추가
@@ -41,6 +46,12 @@ public class Fragment2 extends Fragment {
     File file;//저장소 저장된 파일변수
     Uri fileUri;//저장소의 파일 경로
     Bitmap resultPhotoBitmap;//사진찍은 이미지를 화면에 불러올때 이미지변수
+    int mMode = AppConstants.MODE_INSERT;
+    int weatherIndex = 0;//일기신규등록시 날씨 값 초기화
+    RangeSliderView moodSlider;//일기신규등록시 일일기분 객체생성
+    int moodIndex = 2;//일일 기분 초기값
+    Note item;//일기장 전송값 Get/Set 용 클래스
+    EditText contentsInput;//일기장 내용 UI객체
 
     @Override
     public void onAttach(Context context) {//프레그먼트가 실행될때 자동실행
@@ -81,8 +92,144 @@ public class Fragment2 extends Fragment {
                 }
             }
         });
+        
+        initUI(rootView);//일기저장 메서드 실행
 
         return rootView;
+    }
+
+    private void initUI(ViewGroup rootView) {
+        contentsInput = rootView.findViewById(R.id.contentsInput);
+        //일기저장버튼 클릭이벤트
+        Button saveButton = rootView.findViewById(R.id.saveButton);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mMode == AppConstants.MODE_INSERT) {
+                    saveNote();
+                } else if(mMode == AppConstants.MODE_MODIFY) {
+                    modifyNote();
+                }
+                if (listener != null) {
+                    listener.onTabSelected(0);
+                }
+            }
+        });
+        //일기삭제버튼 클릭이벤트
+        Button deleteButton = rootView.findViewById(R.id.deleteButton);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteNote();
+                if (listener != null) {
+                    listener.onTabSelected(0);
+                }
+            }
+        });
+        //일기닫기버튼 클릭이벤트
+        Button closeButton = rootView.findViewById(R.id.closeButton);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) {
+                    listener.onTabSelected(0);
+                }
+            }
+        });
+        moodSlider = rootView.findViewById(R.id.sliderView);
+        final RangeSliderView.OnSlideListener listener = new RangeSliderView.OnSlideListener() {
+            @Override
+            public void onSlide(int index) {
+                Log.d(TAG,"moodIndex changed to " + index);
+                moodIndex = index;
+            }
+        };
+        moodSlider.setOnSlideListener(listener);
+        moodSlider.setInitialIndex(2);
+    }
+
+    //데이터베이스 레코드 추가
+    private void saveNote() {
+        String address = "구글위치입력 사용안함";
+        String contents = contentsInput.getText().toString();
+        String picturePath = savePicture();
+        String sql = "insert into " + NoteDatabase.TABLE_NOTE +
+                "(WEATHER, ADDRESS, LOCATION_X, LOCATION_Y, CONTENTS, MOOD, PICTURE) values(" +
+                "'"+ weatherIndex + "', " +
+                "'"+ address + "', " +
+                "'"+ "" + "', " +
+                "'"+ "" + "', " +
+                "'"+ contents + "', " +
+                "'"+ moodIndex + "', " +
+                "'"+ picturePath + "')";
+        Log.d(TAG, "sql : " + sql);
+        NoteDatabase database = NoteDatabase.getInstance(context);
+        database.execSQL(sql);
+    }
+
+    //데이터베이스 레코드 수정
+    private void modifyNote() {
+        if (item != null) {
+            String address = "구글위치수정 사용안함";
+            String contents = contentsInput.getText().toString();
+            String picturePath = savePicture();
+            String sql = "update " + NoteDatabase.TABLE_NOTE +
+                    " set " +
+                    "   WEATHER = '" + weatherIndex + "'" +
+                    "   ,ADDRESS = '" + address + "'" +
+                    "   ,LOCATION_X = '" + "" + "'" +
+                    "   ,LOCATION_Y = '" + "" + "'" +
+                    "   ,CONTENTS = '" + contents + "'" +
+                    "   ,MOOD = '" + moodIndex + "'" +
+                    "   ,PICTURE = '" + picturePath + "'" +
+                    " where " +
+                    "   _id = " + item._id;
+            Log.d(TAG, "sql : " + sql);
+            NoteDatabase database = NoteDatabase.getInstance(context);
+            database.execSQL(sql);
+        }
+    }
+    //캡쳐또는 앨범의 사진을 저장하고,URL 을 DB에 저장할 수 있도록 구하는 메서드
+    private String savePicture() {
+        if (resultPhotoBitmap == null) {
+            Log.d(TAG,"No picture to be saved.");
+            return "";
+        }
+        File photoFolder = new File(AppConstants.FOLDER_PHOTO);
+        if(!photoFolder.isDirectory()) {
+            Log.d(TAG, "creating photo folder : " + photoFolder);
+            photoFolder.mkdirs();
+        }
+        String photoFilename = createFilename();
+        String picturePath = photoFolder + File.separator + photoFilename;
+        try {
+            FileOutputStream outstream = new FileOutputStream(picturePath);
+            resultPhotoBitmap.compress(Bitmap.CompressFormat.PNG, 100, outstream);
+            outstream.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return picturePath;
+    }
+    //저장할 파일이 중복되지 않도록 현재 시간을 파일명으로 주기위한 메서드
+    private String createFilename() {
+        Date curDate = new Date();
+        String curDateStr = String.valueOf(curDate.getTime());
+        return curDateStr;
+    }
+
+    //레코드 삭제
+    private void deleteNote() {
+        Log.d(TAG,"deleteNote called.");
+        if (item != null) {
+            String sql = "delete from " + NoteDatabase.TABLE_NOTE +
+                    " where " +
+                    "   _id = " + item._id;
+
+            Log.d(TAG, "sql : " + sql);
+            NoteDatabase database = NoteDatabase.getInstance(context);
+            database.execSQL(sql);
+        }
     }
 
     public void showDialog(int contentPhoto) {
@@ -156,8 +303,17 @@ public class Fragment2 extends Fragment {
     }
 
     public void showPhotoCaptureActivity() { //사진찍기 선택
-        if(file == null) {
+        /*if(file == null) {
             file = createFile();
+        }*/
+        try {
+            file = createFile();
+            if (file.exists()) {
+                file.delete();
+            }
+            file.createNewFile();//createFile()에서 파일이 저장되지 않을때, 에러발생하지 않도록 더미파일생성
+        } catch(Exception e) {
+            e.printStackTrace();
         }
         //아래 org.techtown.diary.fileprovider 는 manifest.xml 시스템에 등록한 이름과 같아야 합니다.
         //Uri fileUri = FileProvider.getUriForFile(context, "org.techtown.diary.fileprovider", file);
@@ -168,6 +324,8 @@ public class Fragment2 extends Fragment {
             //build.gradle의 targetSdkVersion을 24미만으로 설정해야 아래경로로 파일이 저장않됨
             //안드로이드 정책임. 참조: https://darksilber.tistory.com/325
             fileUri = Uri.fromFile(file);
+            //fileUri = Uri.fromFile(new File(file.getAbsolutePath()));
+            Log.d(TAG, "여기2 " + fileUri);
         }
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//카메라앱 실행
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);//위 카메라앱에서 저장된 값을 가져오는 권한
@@ -177,9 +335,11 @@ public class Fragment2 extends Fragment {
     }
 
     public File createFile() { //사진 찍기시 신규파일 생성
-        String filename = "capture.jpg";
-        File storageDir = Environment.getExternalStorageDirectory();
-        File outFile = new File(storageDir, filename);
+        String filename = "capture.jpg";//createFilename();
+        File outFile = new File(context.getFilesDir(), filename);//아래 2줄을 1줄로 처리가능
+        //File storageDir = Environment.getExternalStorageDirectory();
+        //File outFile = new File(storageDir, filename);
+        Log.d(TAG, "여기1 " + Environment.getExternalStorageDirectory());
         return outFile;
     }
 
@@ -188,7 +348,7 @@ public class Fragment2 extends Fragment {
      */
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        Log.d(TAG,"응답메세지"+ requestCode);
+        Log.d(TAG,"여기3 "+ requestCode);
         if(intent != null) {
             switch (requestCode)  {
                 case  AppConstants.REQ_PHOTO_CAPTURE://사진 찍는 경우

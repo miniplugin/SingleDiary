@@ -1,19 +1,13 @@
 package org.techtown.diary;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.yanzhenjie.permission.Action;
-import com.yanzhenjie.permission.AndPermission;
-import com.yanzhenjie.permission.runtime.Permission;
-
-import java.util.List;
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements OnTabItemSelectedListener {
     //디버그용 태그 추가
@@ -58,6 +52,18 @@ public class MainActivity extends AppCompatActivity implements OnTabItemSelected
         });
         // 데이터베이스 열기
         openDatabase();
+        // DB에 사진을 저장할 폴더 값지정
+        setPicturePath();
+    }
+
+    //사진을 저장할 폴더 지정 메서드
+    public void setPicturePath() {
+        String folderPath = getFilesDir().getAbsolutePath();
+        AppConstants.FOLDER_PHOTO = folderPath + File.separator + "photo";
+        File photoFolder = new File(AppConstants.FOLDER_PHOTO);
+        if (!photoFolder.exists()) {
+            photoFolder.mkdirs();
+        }
     }
 
     //데이터베이스 열기 (데이터베이스가 없을 때는 만들기)

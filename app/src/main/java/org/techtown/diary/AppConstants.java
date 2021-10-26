@@ -12,15 +12,11 @@ public class AppConstants {
 
     public static final int CONTENT_PHOTO = 105;
     public static final int CONTENT_PHOTO_EX = 106;
+    public static final int MODE_INSERT = 1;//일기저장모드 명시
+    public static final int MODE_MODIFY = 2;//일기수정모드 명시
 
     public static String FOLDER_PHOTO;
-
-    public static final String KEY_URI_PHOTO = "URI_PHOTO";
     public static String DATABASE_NAME = "note.db";
 
-    public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
-    public static SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd HH시");
-    public static SimpleDateFormat dateFormat3 = new SimpleDateFormat("MM월 dd일");
     public static SimpleDateFormat dateFormat4 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    public static SimpleDateFormat dateFormat5 = new SimpleDateFormat("yyyy-MM-dd");
 }
