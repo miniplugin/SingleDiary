@@ -11,7 +11,7 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements OnTabItemSelectedListener {
     //디버그용 태그 추가
-    private static final String TAG = "MainActivity1";
+    private static final String TAG = "태그MainActivity";
     //멤버 변수선언
     BottomNavigationView bottomNavigationView;
     Fragment1 fragment1;
@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements OnTabItemSelected
                         return true;
                     case R.id.tab2:
                         Toast.makeText(getApplicationContext(), "두번째 탭 선택함", Toast.LENGTH_SHORT).show();
+                        fragment2 = new Fragment2();
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_container, fragment2).commit();
                         return true;
                     case R.id.tab3:
@@ -95,9 +96,18 @@ public class MainActivity extends AppCompatActivity implements OnTabItemSelected
         if(position == 0) {
             bottomNavigationView.setSelectedItemId(R.id.tab1);
         }else if(position == 1) {
-            bottomNavigationView.setSelectedItemId(R.id.tab2);
+            fragment2 = new Fragment2();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main_container, fragment2).commit();
         }else if(position == 2) {
             bottomNavigationView.setSelectedItemId(R.id.tab3);
         }
+    }
+
+    @Override
+    public void showFragment2(Note item) {
+        fragment2 = new Fragment2();
+        fragment2.setItem(item);
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, fragment2).commit();
     }
 }

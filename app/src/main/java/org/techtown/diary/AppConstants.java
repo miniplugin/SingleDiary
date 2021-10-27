@@ -19,4 +19,5 @@ public class AppConstants {
     public static String DATABASE_NAME = "note.db";
 
     public static SimpleDateFormat dateFormat4 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static SimpleDateFormat dateFormat5 = new SimpleDateFormat("yyyy-MM-dd");
 }

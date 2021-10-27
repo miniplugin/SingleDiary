@@ -28,7 +28,7 @@ import lib.kingja.switchbutton.SwitchMultiButton;
  */
 public class Fragment1 extends Fragment {
     //디버그용 태그 추가
-    private static final String TAG = "Fragment1";
+    private static final String TAG = "태그Fragment1";
     //클래스에서 사용할 멤버변수 선언(아래)
     RecyclerView recyclerView;
     NoteAdapter noteAdapter;
@@ -150,7 +150,11 @@ public class Fragment1 extends Fragment {
             @Override
             public void onItemClick(NoteAdapter.ViewHolder holder, View view, int position) {
                 Note item = noteAdapter.getItem(position);
-                Toast.makeText(getContext(), "아이템 선택됨 : " + item.getContents(), Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "아이템 선택됨 : " + item.get_id());
+                //Toast.makeText(getContext(), "아이템 선택됨 : " + item.getContents(), Toast.LENGTH_SHORT).show();
+                if (listener != null) {
+                    listener.showFragment2(item);
+                }
             }
         });
 

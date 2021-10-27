@@ -1,6 +1,7 @@
 package org.techtown.diary;
 
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -30,13 +32,17 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.github.channguyen.rsv.RangeSliderView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Fragment2 extends Fragment {
     //디버그용 태그 추가
-    private static final String TAG = "Fragment2";
+    private static final String TAG = "태그Fragment2";
     Context context;//현재 화면 가리키는 화면변수
     OnTabItemSelectedListener listener;//하단 탭메뉴를 클릭 대기변수
     ImageView pictureImageView;//카메라 이미지변수
@@ -48,10 +54,14 @@ public class Fragment2 extends Fragment {
     Bitmap resultPhotoBitmap;//사진찍은 이미지를 화면에 불러올때 이미지변수
     int mMode = AppConstants.MODE_INSERT;
     int weatherIndex = 0;//일기신규등록시 날씨 값 초기화
-    RangeSliderView moodSlider;//일기신규등록시 일일기분 객체생성
+    TextView dateTextView;//일기 등록날찌 객체선언
+    TextView locationTextView;//일기 등록시 구글위치 객체선언(현재 구글위치정보는 사용하지 않음)
+    RangeSliderView moodSlider;//일기 등록시 일일기분 객체생성
     int moodIndex = 2;//일일 기분 초기값
     Note item;//일기장 전송값 Get/Set 용 클래스
     EditText contentsInput;//일기장 내용 UI객체
+    SimpleDateFormat todayDateFormat;//일기장NOTE 에서 가져온 날짜 객체로 사용
+    String currentDateString;//일기장 저장날짜 출력포맷 변수
 
     @Override
     public void onAttach(Context context) {//프레그먼트가 실행될때 자동실행
@@ -77,6 +87,9 @@ public class Fragment2 extends Fragment {
         // Inflate the layout for this fragment
         //return inflater.inflate(R.layout.fragment2, container, false);
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment2, container, false);
+        dateTextView = rootView.findViewById(R.id.dateTextView);
+        locationTextView = rootView.findViewById(R.id.locationTextView);
+        contentsInput = rootView.findViewById(R.id.contentsInput);
 
         pictureImageView = rootView.findViewById(R.id.pictureImageView);
         pictureImageView.setOnClickListener(new View.OnClickListener() {
@@ -94,8 +107,53 @@ public class Fragment2 extends Fragment {
         });
         
         initUI(rootView);//일기저장 메서드 실행
-
+        applyItem();//Fragment1 에서 item 클릭시 적용되는 값
         return rootView;
+    }
+
+    private void applyItem() {
+        if (item != null) {
+            mMode = AppConstants.MODE_MODIFY;
+            locationTextView.setText(item.getAddress());
+            dateTextView.setText(item.getCreateDateStr());
+            contentsInput.setText(item.getContents());
+            String picturePath = item.getPicture();
+            Log.d(TAG,"picturePath : " + picturePath);
+            if (picturePath == null || picturePath.equals("")) {
+                pictureImageView.setImageResource(R.drawable.noimagefound);
+            } else {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inSampleSize = 1;
+                resultPhotoBitmap = BitmapFactory.decodeFile(item.getPicture(), options);
+                pictureImageView.setImageBitmap(resultPhotoBitmap);
+                //구형 버전에서 이미지가 가로로 자동변경 되어서 나타납니다.Glide사용도 않됨
+                /*
+                String filePath = item.getPicture();
+                Log.d(TAG,"오늘picturePath : " + resultPhotoBitmap.getWidth());
+                //이미지 축소 되어서 불러와짐(아래)
+                decodeSampledBitmapFromResource(new File(filePath), resultPhotoBitmap.getWidth(), resultPhotoBitmap.getHeight());
+                Glide.with(context)
+                        .load(new File(filePath))
+                        .apply(new RequestOptions().override(resultPhotoBitmap.getWidth(), resultPhotoBitmap.getHeight()))
+                        .into(pictureImageView);
+                */
+            }
+            moodIndex = Integer.parseInt(item.getMood());
+            moodSlider.setInitialIndex(moodIndex);
+        } else {
+            mMode = AppConstants.MODE_INSERT;
+            locationTextView.setText("");
+            Date currentDate = new Date();
+            if (todayDateFormat == null) {
+                todayDateFormat = new SimpleDateFormat(getResources().getString(R.string.today_date_format));
+            }
+            currentDateString = todayDateFormat.format(currentDate);
+            Log.d(TAG,"currentDateString : " + currentDateString);
+            dateTextView.setText(currentDateString);
+            contentsInput.setText("");
+            pictureImageView.setImageResource(R.drawable.noimagefound);
+            moodSlider.setInitialIndex(2);
+        }
     }
 
     private void initUI(ViewGroup rootView) {
@@ -324,7 +382,6 @@ public class Fragment2 extends Fragment {
             //build.gradle의 targetSdkVersion을 24미만으로 설정해야 아래경로로 파일이 저장않됨
             //안드로이드 정책임. 참조: https://darksilber.tistory.com/325
             fileUri = Uri.fromFile(file);
-            //fileUri = Uri.fromFile(new File(file.getAbsolutePath()));
             Log.d(TAG, "여기2 " + fileUri);
         }
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//카메라앱 실행
@@ -339,7 +396,7 @@ public class Fragment2 extends Fragment {
         File outFile = new File(context.getFilesDir(), filename);//아래 2줄을 1줄로 처리가능
         //File storageDir = Environment.getExternalStorageDirectory();
         //File outFile = new File(storageDir, filename);
-        Log.d(TAG, "여기1 " + Environment.getExternalStorageDirectory());
+        Log.d(TAG, "여기1 " + outFile.getAbsolutePath());
         return outFile;
     }
 
@@ -350,12 +407,16 @@ public class Fragment2 extends Fragment {
         super.onActivityResult(requestCode, resultCode, intent);
         Log.d(TAG,"여기3 "+ requestCode);
         if(intent != null) {
+            String filePath = "";
             switch (requestCode)  {
                 case  AppConstants.REQ_PHOTO_CAPTURE://사진 찍는 경우
                     /*resultPhotoBitmap = decodeSampledBitmapFromResource(file, pictureImageView.getWidth(), pictureImageView.getHeight());
                     pictureImageView.setImageBitmap(resultPhotoBitmap);*/
+                    //이미지 축소 되어서 불러와짐(아래)
+                    filePath = file.getAbsolutePath();
+                    decodeSampledBitmapFromResource(new File(filePath), pictureImageView.getWidth(), pictureImageView.getHeight());
                     Glide.with(context)
-                            .load(file)
+                            .load(new File(filePath))
                             .apply(new RequestOptions().override(pictureImageView.getWidth(), pictureImageView.getHeight()))
                             .into(pictureImageView);
                     isPhotoFileSaved = true;//이 변수값으로 사진수정(CONTENT_PHOTO_EX)로 변경됨
@@ -366,10 +427,12 @@ public class Fragment2 extends Fragment {
                     Cursor cursor = context.getContentResolver().query(selectedImage, filePathColumn, null, null, null);
                     cursor.moveToFirst();
                     int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    String filePath = cursor.getString(columnIndex);
+                    filePath = cursor.getString(columnIndex);
                     cursor.close();
-                    //resultPhotoBitmap = decodeSampledBitmapFromResource(new File(filePath), pictureImageView.getWidth(), pictureImageView.getHeight());
-                    //pictureImageView.setImageBitmap(resultPhotoBitmap);//화면이 자동으로 돌아가서 아래처럼 변경
+                    //이미지 축소 되어서 불러와짐(아래)
+                    resultPhotoBitmap = decodeSampledBitmapFromResource(new File(filePath), pictureImageView.getWidth(), pictureImageView.getHeight());
+                    //pictureImageView.setImageBitmap(resultPhotoBitmap);
+                    //이미지가 가로로 자동변경되어서 취소 아래 Glide사용
                     Glide.with(context)
                             .load(new File(filePath))
                             .apply(new RequestOptions().override(pictureImageView.getWidth(), pictureImageView.getHeight()))
@@ -418,4 +481,7 @@ public class Fragment2 extends Fragment {
         return inSampleSize;
     }
 
+    public void setItem(Note item) {
+        this.item = item;
+    }
 }
