@@ -1,14 +1,26 @@
 #### 한줄일기장 참조 소스 및 기타정보
 - https://github.com/mike-jung/DoItAndroidRev8/tree/master/part3/SingleDiary4
-- 테스트기기를 API24이상(안드로이드7.0 누가버전2016년)으로 변경 후 테스트예정.
 - 깃 master 브랜치링크: [UI강의 소스로 사용](https://github.com/miniplugin/SingleDiary/tree/master)
 - 깃 dev 브랜치링크: [개발강의 소스로 사용](https://github.com/miniplugin/SingleDiary/tree/dev)
 - 작업결과는 제일 하단에 캡쳐이미지 참조해주세요
 
 #### 미처리 사항
-- 검색어 .load(new File(filePath)) : 이미지 가로로 자동 변경 되는 문제가 리스트 클릭시 상세보기 에서 발생됨.
-- 기존 앨범에서 선택하기는 잘 작동됨.
 - GPS 위치정보로 영문주소와 해당위치의 기상청 날씨정보를 불러오는 부분은 강의에서 생략함.
+- 삭제시 DB삭제는 정상이지만, 기존 업로드 저장된 이미지도 삭제 되게 처리예정.
+
+#### 20211028(목)
+- API24이상(안드로이드7.0 누가버전2016년)일때만 정상 저장을 -> 버전에 상관없이 사진저장 가능하도록 처리함.
+- 사진이 가로로 나오는 문제는 UI로 처리(아래 매서드 추가 추 적용)
+
+```
+public void imageAutoRotate(int angle) {
+        if(Build.VERSION.SDK_INT >= 24) {
+            pictureImageView.setRotation(0);//Glide 로 이미지 자동으로 돌아가는 부분 처리
+        } else {
+            pictureImageView.setRotation(angle);//Glide 로 이미지 자동으로 돌아가는 부분 처리
+        }
+    }
+```
 
 #### 20211027(수): Fragment3.java 와 글CRUD 마무리작업
 - Fragment1 에서 목록 클릭시 Fragment2 글수정화면으로 이동처리(수정/삭제기능)OK.

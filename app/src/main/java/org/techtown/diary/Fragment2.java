@@ -63,6 +63,13 @@ public class Fragment2 extends Fragment {
     SimpleDateFormat todayDateFormat;//일기장NOTE 에서 가져온 날짜 객체로 사용
     String currentDateString;//일기장 저장날짜 출력포맷 변수
 
+    public void imageAutoRotate(int angle) {
+        if(Build.VERSION.SDK_INT >= 24) {
+            pictureImageView.setRotation(0);//Glide 로 이미지 자동으로 돌아가는 부분 처리
+        } else {
+            pictureImageView.setRotation(angle);//Glide 로 이미지 자동으로 돌아가는 부분 처리
+        }
+    }
     @Override
     public void onAttach(Context context) {//프레그먼트가 실행될때 자동실행
         super.onAttach(context);
@@ -121,17 +128,14 @@ public class Fragment2 extends Fragment {
             Log.d(TAG,"picturePath : " + picturePath);
             if (picturePath == null || picturePath.equals("")) {
                 pictureImageView.setImageResource(R.drawable.noimagefound);
+                imageAutoRotate(0);//Glide 로 이미지 자동으로 돌아가는 부분 처리
             } else {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inSampleSize = 1;
-                resultPhotoBitmap = BitmapFactory.decodeFile(item.getPicture(), options);
+                resultPhotoBitmap = BitmapFactory.decodeFile(picturePath, options);
                 pictureImageView.setImageBitmap(resultPhotoBitmap);
-                //구형 버전에서 이미지가 가로로 자동변경 되어서 나타납니다.Glide사용도 않됨
-                /*
-                String filePath = item.getPicture();
-                Log.d(TAG,"오늘picturePath : " + resultPhotoBitmap.getWidth());
-                //이미지 축소 되어서 불러와짐(아래)
-                decodeSampledBitmapFromResource(new File(filePath), resultPhotoBitmap.getWidth(), resultPhotoBitmap.getHeight());
+                imageAutoRotate(-90);//Glide 로 이미지 자동으로 돌아가는 부분 처리
+                /* Glide 로 이미지 자동으로 돌아가는 부분 처리 취소 UI로 처리
                 Glide.with(context)
                         .load(new File(filePath))
                         .apply(new RequestOptions().override(resultPhotoBitmap.getWidth(), resultPhotoBitmap.getHeight()))
@@ -152,6 +156,7 @@ public class Fragment2 extends Fragment {
             dateTextView.setText(currentDateString);
             contentsInput.setText("");
             pictureImageView.setImageResource(R.drawable.noimagefound);
+            imageAutoRotate(0);
             moodSlider.setInitialIndex(2);
         }
     }
@@ -361,9 +366,6 @@ public class Fragment2 extends Fragment {
     }
 
     public void showPhotoCaptureActivity() { //사진찍기 선택
-        /*if(file == null) {
-            file = createFile();
-        }*/
         try {
             file = createFile();
             if (file.exists()) {
@@ -381,7 +383,8 @@ public class Fragment2 extends Fragment {
         } else {
             //build.gradle의 targetSdkVersion을 24미만으로 설정해야 아래경로로 파일이 저장않됨
             //안드로이드 정책임. 참조: https://darksilber.tistory.com/325
-            fileUri = Uri.fromFile(file);
+            //fileUri = Uri.fromFile(file);
+            Uri fileUri = FileProvider.getUriForFile(context, "org.techtown.diary.fileprovider", file);
             Log.d(TAG, "여기2 " + fileUri);
         }
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//카메라앱 실행
@@ -392,7 +395,7 @@ public class Fragment2 extends Fragment {
     }
 
     public File createFile() { //사진 찍기시 신규파일 생성
-        String filename = "capture.jpg";//createFilename();
+        String filename = createFilename();//"capture.jpg";
         File outFile = new File(context.getFilesDir(), filename);//아래 2줄을 1줄로 처리가능
         //File storageDir = Environment.getExternalStorageDirectory();
         //File outFile = new File(storageDir, filename);
@@ -412,13 +415,23 @@ public class Fragment2 extends Fragment {
                 case  AppConstants.REQ_PHOTO_CAPTURE://사진 찍는 경우
                     /*resultPhotoBitmap = decodeSampledBitmapFromResource(file, pictureImageView.getWidth(), pictureImageView.getHeight());
                     pictureImageView.setImageBitmap(resultPhotoBitmap);*/
-                    //이미지 축소 되어서 불러와짐(아래)
-                    filePath = file.getAbsolutePath();
-                    decodeSampledBitmapFromResource(new File(filePath), pictureImageView.getWidth(), pictureImageView.getHeight());
+                    Uri selectedImage2 = intent.getData();
+                    String[] filePathColumn2 = {MediaStore.Images.Media.DATA};
+                    Cursor cursor2 = context.getContentResolver().query(selectedImage2, filePathColumn2, null, null, null);
+                    cursor2.moveToFirst();
+                    int columnIndex2 = cursor2.getColumnIndex(filePathColumn2[0]);
+                    filePath = cursor2.getString(columnIndex2);
+                    cursor2.close();
+                    //이미지 축소 되어서 resultPhotoBitmap 으로 저장짐(아래)
+                    resultPhotoBitmap = decodeSampledBitmapFromResource(new File(filePath), pictureImageView.getWidth(), pictureImageView.getHeight());
+                    pictureImageView.setImageBitmap(resultPhotoBitmap);
+                    imageAutoRotate(-90);//Glide 로 이미지 자동으로 돌아가는 부분 처리
+                    /* Glide 로 이미지 자동으로 돌아가는 부분 처리 취소 UI로 처리
                     Glide.with(context)
                             .load(new File(filePath))
                             .apply(new RequestOptions().override(pictureImageView.getWidth(), pictureImageView.getHeight()))
                             .into(pictureImageView);
+                     */
                     isPhotoFileSaved = true;//이 변수값으로 사진수정(CONTENT_PHOTO_EX)로 변경됨
                     break;
                 case AppConstants.REQ_PHOTO_SELECTION://앨범에서 사진을 선택하는 경우
@@ -431,12 +444,14 @@ public class Fragment2 extends Fragment {
                     cursor.close();
                     //이미지 축소 되어서 불러와짐(아래)
                     resultPhotoBitmap = decodeSampledBitmapFromResource(new File(filePath), pictureImageView.getWidth(), pictureImageView.getHeight());
-                    //pictureImageView.setImageBitmap(resultPhotoBitmap);
-                    //이미지가 가로로 자동변경되어서 취소 아래 Glide사용
+                    pictureImageView.setImageBitmap(resultPhotoBitmap);
+                    imageAutoRotate(-90);//Glide 로 이미지 자동으로 돌아가는 부분 처리
+                    /* Glide 로 이미지 자동으로 돌아가는 부분 처리 취소 UI로 처리
                     Glide.with(context)
                             .load(new File(filePath))
                             .apply(new RequestOptions().override(pictureImageView.getWidth(), pictureImageView.getHeight()))
                             .into(pictureImageView);
+                     */
                     isPhotoCaptured = true;//이 변수값으로 사진수정(CONTENT_PHOTO_EX)로 변경됨
                     break;
             }

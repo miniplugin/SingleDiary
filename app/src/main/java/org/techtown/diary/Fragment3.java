@@ -365,7 +365,7 @@ public class Fragment3 extends Fragment {
         cal.add(Calendar.DAY_OF_MONTH, 1);
         return AppConstants.dateFormat5.format(cal.getTime());
     }
-    //전일 날짜 구하기
+    //amount 매개변수로 쿼리에서 오늘보다 작은 7일전 기간의 라인챠트 구하기
     public String getDayBefore(int amount) {
         Date todayDate = new Date();
         Calendar cal = Calendar.getInstance();
