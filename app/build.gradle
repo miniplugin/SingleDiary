@@ -42,4 +42,5 @@ dependencies {
     implementation 'com.github.pedroSG94:AutoPermissions:1.0.3'
     //implementation 'com.yanzhenjie:permission:2.0.3'//위 대신 사용
     implementation 'com.github.bumptech.glide:glide:4.9.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
 }
