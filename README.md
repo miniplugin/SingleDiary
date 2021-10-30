@@ -3,7 +3,7 @@
 - 깃 master 브랜치링크: [UI강의 소스로 사용](https://github.com/miniplugin/SingleDiary/tree/master)
 - 깃 dev 브랜치링크: [개발강의 소스로 사용](https://github.com/miniplugin/SingleDiary/tree/dev)
 - 깃 dev_api 브랜치링크: [개발강의 소스로 사용](https://github.com/miniplugin/SingleDiary/tree/dev_api)
-- 깃 로그인 인증API 스프링5 소스: https://github.com/miniplugin/kimilguk
+- 깃 로그인 인증API 스프링 프로젝트 소스: https://github.com/miniplugin/kimilguk
 - 작업결과는 제일 하단에 캡쳐이미지 참조해주세요
 
 #### 미처리 사항
