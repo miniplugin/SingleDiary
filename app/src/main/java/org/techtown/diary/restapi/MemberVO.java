@@ -19,6 +19,10 @@ public class MemberVO {
         this.email = email;
     }
 
+    public MemberVO() {
+
+    }
+
     public String getUser_id() {
         return user_id;
     }
@@ -41,5 +45,14 @@ public class MemberVO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "MemberVO{" +
+                "user_id='" + user_id + '\'' +
+                ", user_name='" + user_name + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

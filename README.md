@@ -2,15 +2,18 @@
 - https://github.com/mike-jung/DoItAndroidRev8/tree/master/part3/SingleDiary4
 - 깃 master 브랜치링크: [UI강의 소스로 사용](https://github.com/miniplugin/SingleDiary/tree/master)
 - 깃 dev 브랜치링크: [개발강의 소스로 사용](https://github.com/miniplugin/SingleDiary/tree/dev)
+- 깃 dev_api 브랜치링크: [개발강의 소스로 사용](https://github.com/miniplugin/SingleDiary/tree/dev_api)
+- 깃 로그인 인증API 스프링5 소스: https://github.com/miniplugin/kimilguk
 - 작업결과는 제일 하단에 캡쳐이미지 참조해주세요
 
 #### 미처리 사항
 - GPS 위치정보로 영문주소와 해당위치의 기상청 날씨정보를 불러오는 부분은 강의에서 생략함.
 - 삭제시 DB삭제는 정상이지만, 기존 업로드 저장된 이미지도 삭제 되게 처리 강의에서 생략함.
 
-#### 20211030(토): 안드로이드 앱 로그인 구현 에러 처리 예정
+#### 20211030(토): 안드로이드 앱 로그인 구현 에러 처리
 - String requestUrl = "http://192.168.100.18:8080/android/login"; 로컬에서는 문제없음.
 - String requestUrl = "https://kimilguk.herokuapp.com/android/login"; 서버에서는 문제임.
+- 위 문제는 https -> http 로 변경 후 OK 처리.
 
 #### 20211029(금)
 - 깃에 dev_api 브랜치 생성 후 커밋.
