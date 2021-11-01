@@ -120,3 +120,15 @@ public void imageAutoRotate(int angle) {
 ![한줄일기장 리스트](./README/device20211027_2.png)
 ![한줄일기장 상세보기](./README/device20211027_3.png)
 ![한줄일기장 통계처리](./README/device20211028_4.png)
+
+#### 예전 안드로이드 버전이라서 참조만 하세요(아래)
+- 안드로이드버전10 기준 유튜브참고: https://www.youtube.com/playlist?list=PLG7te9eYUi7sjJzJR2i5m6wv-X_7K2pVE
+- 구형 버전 강의 참고(아래): 안드로이드 5.0(롤리팝), API 21
+- 유튜브URL : https://www.edwith.org/android_basic/joinLectures/5984
+- 참조1: https://nangchobi.tistory.com/284
+- 참조2: https://nangchobi.tistory.com/285
+- 참조3: https://nangchobi.tistory.com/286
+- 참조4: https://nangchobi.tistory.com/288
+- 참조5: https://nangchobi.tistory.com/296
+- 참조6: https://nangchobi.tistory.com/299
+- 참조7: https://nangchobi.tistory.com/300
