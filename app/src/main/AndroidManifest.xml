@@ -39,7 +39,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="org.techtown.diary.fileprovider"
+            android:authorities="org.android.kimilgukdiary.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
