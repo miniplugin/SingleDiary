@@ -15,7 +15,8 @@ public class SplashActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                //Intent intent = new Intent(getApplicationContext(), LoginActivity.class); //스프링서버와 통신 시
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class); //단독으로 사용 시
                 startActivity(intent);
                 finish();
             }

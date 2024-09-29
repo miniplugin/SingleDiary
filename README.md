@@ -6,6 +6,12 @@
 - 깃 로그인 인증API 스프링 프로젝트 소스: https://github.com/miniplugin/kimilguk
 - 작업결과는 제일 하단에 캡쳐이미지 참조해주세요
 
+#### 20240929(일): 안드로이드 버전 업에 따른 소스 코드 수정
+- 구글 플레이 스토어에 API13(Sdk 33) 이상만 targetSdkVersion 로 사용하도록 조건을 정했기 때문에(아래 처리)
+- build.gradle과 wrapper에(build:gradle:7.4.2로 업, gradle-7.5-bin.zip로 업) 과 AndroidManifest(보안코드 추가)
+- jcenter() deprecated 때문에 mavenCentral()로 추가 후 KingJA:SwitchButton:v1.1.3 로 변경할 수 밖에 없었음(아래 처리)
+- 원래는 jcenter()에 존재했던 1.1.8 버전 이었으나 https://jitpack.io/#KingJA/SwitchButton/v1.1.3 으로 변경.
+
 #### 미처리 사항
 - GPS 위치정보로 영문주소와 해당위치의 기상청 날씨정보를 불러오는 부분은 강의에서 생략함.
 - 삭제시 DB삭제는 정상이지만, 기존 업로드 저장된 이미지도 삭제 되게 처리 강의에서 생략함.

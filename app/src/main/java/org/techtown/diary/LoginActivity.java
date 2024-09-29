@@ -40,8 +40,8 @@ public class LoginActivity extends AppCompatActivity {
                 postDataParams.put("txtUsername",editTextID.getText().toString());
                 postDataParams.put("txtPassword",editTextPassword.getText().toString());
                 //스프링앱 주소를 지정
-                //String requestUrl = "http://192.168.1.2:8080/android/login";
-                String requestUrl = "http://kimilguk.herokuapp.com/android/login";
+                String requestUrl = "http://192.168.1.2:8080/android/login"; // 스프링 서버와 통신 교육 시(소스는 아래 URL에)
+                //https://github.com/miniplugin/kimilguk/blob/master/src/main/java/org/edu/controller/JsonDataController.java
                 //jsp의 Ajax과 같은 역할의 AsyncTask클래스 사용
                 PostResponseAsyncTask readTask = new PostResponseAsyncTask(LoginActivity.this, postDataParams, new AsyncResponse() {
                     @Override
