@@ -7,9 +7,13 @@
 - 작업결과는 제일 하단에 캡쳐이미지 참조해주세요
 
 #### 미처리 사항
-- Sdk버전 마이그레이션 후 사진 찍기 부분에서 오류가 발생되었음. 처리가 필요함.
 - GPS 위치정보로 영문주소와 해당위치의 기상청 날씨정보를 불러오는 부분은 강의에서 생략함.
 - 삭제시 DB삭제는 정상이지만, 기존 업로드 저장된 이미지도 삭제 되게 처리 강의에서 생략함.
+
+#### 20240930(월): Sdk버전 마이그레이션 후 스마트폰 사진 가져오기 부분 권한코드 추가
+- AndroidManifest에서 android:requestLegacyExternalStorage="true" 추가
+- MainActivity에서 verifyStoragePermissions(this) 메서드 추가
+- 사진이 회전되는 문제처리: imageAutoRotate(90) 으로 변경
 
 #### 20240929(일): 안드로이드 버전 업에 따른 소스 코드 수정
 - 구글 플레이 스토어에 API14(Sdk 34) 이상만 targetSdkVersion 로 사용하도록 조건을 정했기 때문에(아래 처리)

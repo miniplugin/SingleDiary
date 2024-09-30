@@ -134,7 +134,7 @@ public class Fragment2 extends Fragment {
                 options.inSampleSize = 1;
                 resultPhotoBitmap = BitmapFactory.decodeFile(picturePath, options);
                 pictureImageView.setImageBitmap(resultPhotoBitmap);
-                imageAutoRotate(-90);//Glide 로 이미지 자동으로 돌아가는 부분 처리
+                imageAutoRotate(90);//Glide 로 이미지 자동으로 돌아가는 부분 처리
                 /* Glide 로 이미지 자동으로 돌아가는 부분 처리 취소 UI로 처리
                 Glide.with(context)
                         .load(new File(filePath))
@@ -375,8 +375,8 @@ public class Fragment2 extends Fragment {
         } catch(Exception e) {
             e.printStackTrace();
         }
-        //아래 org.techtown.diary.fileprovider 는 manifest.xml 시스템에 등록한 이름과 같아야 합니다.
-        //Uri fileUri = FileProvider.getUriForFile(context, "org.techtown.diary.fileprovider", file);
+        //아래 org.android.kimilgukdiary.fileprovider 는 manifest.xml 시스템에 등록한 이름과 같아야 합니다.
+        //Uri fileUri = FileProvider.getUriForFile(context, "org.android.kimilgukdiary.fileprovider", file);
         if(Build.VERSION.SDK_INT >= 24) {
             Log.d("search","안드로이드7.0 누가버전부터 FileProvider 사용가능");
             fileUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID, file);
@@ -384,7 +384,7 @@ public class Fragment2 extends Fragment {
             //build.gradle의 targetSdkVersion을 24미만으로 설정해야 아래경로로 파일이 저장않됨
             //안드로이드 정책임. 참조: https://darksilber.tistory.com/325
             //fileUri = Uri.fromFile(file);
-            Uri fileUri = FileProvider.getUriForFile(context, "org.techtown.diary.fileprovider", file);
+            Uri fileUri = FileProvider.getUriForFile(context, "org.android.kimilgukdiary.fileprovider", file);
             Log.d(TAG, "여기2 " + fileUri);
         }
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//카메라앱 실행
@@ -425,7 +425,7 @@ public class Fragment2 extends Fragment {
                     //이미지 축소 되어서 resultPhotoBitmap 으로 저장짐(아래)
                     resultPhotoBitmap = decodeSampledBitmapFromResource(new File(filePath), pictureImageView.getWidth(), pictureImageView.getHeight());
                     pictureImageView.setImageBitmap(resultPhotoBitmap);
-                    imageAutoRotate(-90);//Glide 로 이미지 자동으로 돌아가는 부분 처리
+                    imageAutoRotate(90);//Glide 로 이미지 자동으로 돌아가는 부분 처리
                     /* Glide 로 이미지 자동으로 돌아가는 부분 처리 취소 UI로 처리
                     Glide.with(context)
                             .load(new File(filePath))
@@ -445,7 +445,7 @@ public class Fragment2 extends Fragment {
                     //이미지 축소 되어서 불러와짐(아래)
                     resultPhotoBitmap = decodeSampledBitmapFromResource(new File(filePath), pictureImageView.getWidth(), pictureImageView.getHeight());
                     pictureImageView.setImageBitmap(resultPhotoBitmap);
-                    imageAutoRotate(-90);//Glide 로 이미지 자동으로 돌아가는 부분 처리
+                    imageAutoRotate(90);//Glide 로 이미지 자동으로 돌아가는 부분 처리
                     /* Glide 로 이미지 자동으로 돌아가는 부분 처리 취소 UI로 처리
                     Glide.with(context)
                             .load(new File(filePath))
