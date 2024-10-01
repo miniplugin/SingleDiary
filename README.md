@@ -10,6 +10,10 @@
 - GPS 위치정보로 영문주소와 해당위치의 기상청 날씨정보를 불러오는 부분은 강의에서 생략함.
 - 삭제시 DB삭제는 정상이지만, 기존 업로드 저장된 이미지도 삭제 되게 처리 강의에서 생략함.
 
+#### 20241001(화): AGP(Android Gradle Plugin) 8.6.0(gradle-8.7-bin.zip)으로 업그레이드
+- 안드로이드스튜디오 코알라버전에서 AGP를 자동으로 업그레이드 해 보았다.
+- 자세한 작업사항은 제 블로그 https://kimilguk.tistory.com/878 글 하단에서 확인 가능하다.
+
 #### 20240930(월): Sdk버전 마이그레이션 후 스마트폰 사진 가져오기 부분 권한코드 추가
 - AndroidManifest에서 android:requestLegacyExternalStorage="true" 추가
 - MainActivity에서 verifyStoragePermissions(this) 메서드 추가
