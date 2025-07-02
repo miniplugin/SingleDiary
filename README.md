@@ -10,6 +10,10 @@
 - GPS 위치정보로 영문주소와 해당위치의 기상청 날씨정보를 불러오는 부분은 강의에서 생략함.
 - 삭제시 DB삭제는 정상이지만, 기존 업로드 저장된 이미지도 삭제 되게 처리 강의에서 생략함.
 
+#### 20250702(수): 안드로이드 버전 업에 따른 소스 코드 수정-Android 15(API 수준 35) 이상으로 타겟팅 처리함.
+- 구글 플레이 스토어에 API15(Sdk 35) 이상만 targetSdkVersion 로 사용하도록 조건을 정했기 때문에(아래 처리)
+- build.gradle(app)에 compileSdk 35, targetSdkVersion 35, versionCode 16, versionName "SDK35" 로 변경
+
 #### 20241001(화): AGP(Android Gradle Plugin) 8.6.0(gradle-8.7-bin.zip)으로 업그레이드
 - 안드로이드스튜디오 코알라버전에서 AGP를 자동으로 업그레이드 해 보았다.
 - 자세한 작업사항은 제 블로그 https://kimilguk.tistory.com/878 글 하단에서 확인 가능하다.
