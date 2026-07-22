@@ -6,11 +6,11 @@ android {
 
     defaultConfig {
         applicationId "org.android.kimilgukdiary"
-        compileSdk 35
+        compileSdk 36
         minSdkVersion 23
-        targetSdkVersion 35
-        versionCode 16
-        versionName "SDK35"
+        targetSdkVersion 36
+        versionCode 17
+        versionName "SDK36"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
